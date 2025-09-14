@@ -9,7 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MailModule } from '../email/email.module';
 import { MailService } from '../email/email.service';
 import { ConfigModule } from '@nestjs/config';
-import { GoogleService } from '../google/google.service';
 
 @Module({
   
@@ -25,7 +24,7 @@ import { GoogleService } from '../google/google.service';
 
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleService, PrismaService, MailService],
+  providers: [AuthService, JwtStrategy, PrismaService, MailService],
   exports: [AuthService],
 })
 export class AuthModule { }

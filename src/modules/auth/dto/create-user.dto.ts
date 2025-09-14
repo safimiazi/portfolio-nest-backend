@@ -1,22 +1,79 @@
-import { IsEmail, IsNotEmpty, MinLength, IsBoolean, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateUserDto {
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
-  @MinLength(6)
+  @IsString()
   password: string;
 
   @IsNotEmpty()
-  fullName: string;
+  @IsString()
+  name: string;
 
   @IsOptional()
-  language?: string;
-
-  @IsBoolean()
-  isAgreeTerms: boolean;
+  @IsString()
+  photo?: string;
 
   @IsOptional()
-  isEnableNotification?: boolean; // Optional, user can choose
+  @IsString()
+  designation?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @IsOptional()
+  @IsUrl()
+  githubLink?: string;
+
+  @IsOptional()
+  @IsUrl()
+  linkedinLink?: string;
+
+  @IsOptional()
+  @IsUrl()
+  twitterLink?: string;
+
+  @IsOptional()
+  @IsUrl()
+  websiteLink?: string;
+
+  @IsOptional()
+  @IsUrl()
+  resumeLink?: string;
+
+  @IsOptional()
+  @IsString()
+  education?: string;
+
+  @IsOptional()
+  @IsString()
+  university?: string;
+
+  @IsOptional()
+  @IsString()
+  universityStart?: string;
+
+  @IsOptional()
+  @IsString()
+  universityEnd?: string;
+
+  @IsOptional()
+  @IsString()
+  gpa?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  experience?: string;
 }
