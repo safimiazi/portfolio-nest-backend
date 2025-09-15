@@ -12,7 +12,7 @@ export class ProjectService {
   constructor(
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
-  ) {}
+  ) { }
 
   // ✅ Upload helper
   private async uploadImages(files: Express.Multer.File[]): Promise<string[]> {
@@ -59,12 +59,12 @@ export class ProjectService {
   ) {
     const where: any = search
       ? {
-          OR: [
-            { title: { contains: search, mode: 'insensitive' } },
-            { shortDesc: { contains: search, mode: 'insensitive' } },
-            { detailsDesc: { contains: search, mode: 'insensitive' } },
-          ],
-        }
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { shortDesc: { contains: search, mode: 'insensitive' } },
+          { detailsDesc: { contains: search, mode: 'insensitive' } },
+        ],
+      }
       : {};
 
     const [items, total] = await this.prisma.$transaction([
@@ -85,6 +85,49 @@ export class ProjectService {
       totalPages: Math.ceil(total / limit),
     };
   }
+  // ✅ Get all projects for showcase
+  async findAllForShowcase(
+    page: number,
+    limit: number,
+    search?: string,
+    isFeatured?: boolean,
+    order: 'asc' | 'desc' = 'desc',
+  ) {
+    const where: any = {};
+
+    // search filter
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { shortDesc: { contains: search, mode: 'insensitive' } },
+        { detailsDesc: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    // featured filter
+    if (typeof isFeatured === 'boolean') {
+      where.isFeatured = isFeatured;
+    }
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.project.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: order },
+      }),
+      this.prisma.project.count({ where }),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
 
   // ✅ Get single project
   async findOne(id: number) {

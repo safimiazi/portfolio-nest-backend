@@ -16,9 +16,12 @@ export class AuthService {
     ) { }
 
     async register(dto: CreateUserDto) {
-        const existingUser = await this.prisma.user.findUnique({ where: { email: dto.email } });
-        if (existingUser) throw new BadRequestException('Email already registered.');
 
+        // Check if there is already any user in the system
+        const existingUser = await this.prisma.user.findFirst();
+        if (existingUser) {
+            throw new BadRequestException('Registration is disabled. Only one user is allowed.');
+        }
         const hashedPassword = await bcrypt.hash(dto.password, 10);
         const user = await this.prisma.user.create({
             data: { ...dto, password: hashedPassword },
@@ -66,7 +69,7 @@ export class AuthService {
 
         await this.prisma.user.update({
             where: { email },
-            data: { password: hashedPassword, otp: null,  changePasswordAt: new Date() },
+            data: { password: hashedPassword, otp: null, changePasswordAt: new Date() },
         });
 
         return { message: 'Password reset successful' };
