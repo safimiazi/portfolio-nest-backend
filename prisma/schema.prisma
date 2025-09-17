@@ -90,13 +90,15 @@ model WorkExperience {
 }
 
 model Testimonial {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  name     String
-  position String
-  content  String
-  avatar   String
-  user     User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  position  String
+  content   String
+  avatar    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model CodingProfile {
