@@ -20,6 +20,7 @@ export class SkillService {
     });
   }
 
+
   async findAll(page: number, limit: number, search?: string, order: 'asc' | 'desc' = 'desc') {
     const where: any = search
       ? { name: { contains: search, mode: 'insensitive' } }

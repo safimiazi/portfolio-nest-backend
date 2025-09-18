@@ -32,7 +32,6 @@ export class ProjectController {
     @UploadedFiles() files: { images?: Express.Multer.File[] },
     @Req() req: any,
   ) {
-    console.log("body", body)
     const userId = req.user.userId; // ✅ Get userId from JWT
     const data = await this.projectService.create(
       userId,

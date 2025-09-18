@@ -11,6 +11,7 @@ export class WorkExperienceService {
     constructor(private prisma: PrismaService) { }
 
     async create(userId: number, data: any) {
+        console.log("data", data)
         // Validate and parse input
         if (!data.role || !data.company || !data.startDate) {
             throw new BadRequestException('Role, company, and startDate are required');
@@ -38,7 +39,7 @@ export class WorkExperienceService {
                 company: data.company,
                 startDate: new Date(data.startDate),
                 endDate: data.endDate ? new Date(data.endDate) : null,
-                isCurrent: data.isCurrent === 'true',
+                isCurrent: data.isCurrent === true,
                 responsibilities: data.responsibilities,
                 achievements,
             },
@@ -68,6 +69,8 @@ export class WorkExperienceService {
     }
 
     async update(id: number, userId: number, data: any) {
+                console.log("data", data)
+
         const experience = await this.prisma.workExperience.findUnique({ where: { id } });
         if (!experience) throw new NotFoundException('Work experience not found');
         if (experience.userId !== userId) throw new ForbiddenException('You are not allowed to update this work experience');
@@ -98,7 +101,7 @@ export class WorkExperienceService {
                 company: data.company ?? experience.company,
                 startDate: data.startDate ? new Date(data.startDate) : experience.startDate,
                 endDate: data.endDate ? new Date(data.endDate) : experience.endDate,
-                isCurrent: data.isCurrent !== undefined ? data.isCurrent === 'true' : experience.isCurrent,
+                isCurrent: data.isCurrent !== undefined ? data.isCurrent === true : experience.isCurrent,
                 responsibilities: data.responsibilities ?? experience.responsibilities,
                 achievements: achievements || experience.achievements,
             },
