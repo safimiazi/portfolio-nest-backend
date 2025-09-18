@@ -2,21 +2,42 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  InternalServerErrorException,
 } from '@nestjs/common';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TestimonialService {
-  constructor(private prisma: PrismaService) {}
-
-  async create(userId: number, data: any) {
+  constructor(private prisma: PrismaService, private cloudinary: CloudinaryService) { }
+  // Upload avatar to Cloudinary
+  private async uploadAvatar(file: Express.Multer.File): Promise<string> {
+    try {
+      const result = await this.cloudinary.uploadBuffer(
+        file.buffer,
+        'portfolio',
+        'image',
+      );
+      return result.secure_url;
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Avatar upload failed: ' + err.message,
+      );
+    }
+  }
+  async create(userId: number, data: any, file?: Express.Multer.File,
+  ) {
+    let avatarUrl
+    if (file) {
+      avatarUrl = await this.uploadAvatar(file);
+    }
     return this.prisma.testimonial.create({
       data: {
         userId,
         name: data.name,
         position: data.position,
         content: data.content,
-        avatar: data.avatar,
+        avatar: avatarUrl,
       },
     });
   }
@@ -43,21 +64,35 @@ export class TestimonialService {
     return testimonial;
   }
 
-  async update(id: number, userId: number, data: any) {
-    const testimonial = await this.prisma.testimonial.findUnique({ where: { id } });
-    if (!testimonial) throw new NotFoundException('Testimonial not found');
-    if (testimonial.userId !== userId) throw new ForbiddenException('You are not allowed to update this testimonial');
+async update(
+  id: number,
+  userId: number,
+  data: any,
+  file?: Express.Multer.File,
+) {
+  const testimonial = await this.prisma.testimonial.findUnique({ where: { id } });
+  if (!testimonial) throw new NotFoundException('Testimonial not found');
+  if (testimonial.userId !== userId)
+    throw new ForbiddenException('You are not allowed to update this testimonial');
 
-    return this.prisma.testimonial.update({
-      where: { id },
-      data: {
-        name: data.name ?? testimonial.name,
-        position: data.position ?? testimonial.position,
-        content: data.content ?? testimonial.content,
-        avatar: data.avatar ?? testimonial.avatar,
-      },
-    });
+  let avatarUrl = testimonial.avatar;
+
+  // ✅ If a new avatar file is uploaded, upload to Cloudinary
+  if (file) {
+    avatarUrl = await this.uploadAvatar(file);
   }
+
+  return this.prisma.testimonial.update({
+    where: { id },
+    data: {
+      name: data.name ?? testimonial.name,
+      position: data.position ?? testimonial.position,
+      content: data.content ?? testimonial.content,
+      avatar: avatarUrl,
+    },
+  });
+}
+
 
   async remove(id: number, userId: number) {
     const testimonial = await this.prisma.testimonial.findUnique({ where: { id } });

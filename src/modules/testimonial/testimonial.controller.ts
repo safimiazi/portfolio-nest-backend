@@ -10,10 +10,13 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TestimonialService } from './testimonial.service';
 import { successResponse } from 'src/common/response';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('testimonials')
 export class TestimonialController {
@@ -21,9 +24,12 @@ export class TestimonialController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create')
-  async create(@Body() body: any, @Req() req: any) {
+      @UseInterceptors(FileInterceptor('avatar'))
+  
+  async create(@Body() body: any, @Req() req: any,        @UploadedFile() avatar?: Express.Multer.File,
+  ) {
     const userId = req.user.userId;
-    const data = await this.testimonialService.create(userId, body);
+    const data = await this.testimonialService.create(userId, body,avatar);
     return successResponse(data, 'Testimonial created successfully');
   }
 
@@ -46,13 +52,20 @@ export class TestimonialController {
     return successResponse(data, 'Testimonial fetched successfully');
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any, @Req() req: any) {
-    const userId = req.user.userId;
-    const data = await this.testimonialService.update(id, userId, body);
-    return successResponse(data, 'Testimonial updated successfully');
-  }
+@UseGuards(JwtAuthGuard)
+@Put(':id')
+@UseInterceptors(FileInterceptor('avatar')) // handle uploaded file
+async update(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() body: any,
+  @Req() req: any,
+  @UploadedFile() avatar?: Express.Multer.File,
+) {
+  const userId = req.user.userId;
+  const data = await this.testimonialService.update(id, userId, body, avatar);
+  return successResponse(data, 'Testimonial updated successfully');
+}
+
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')

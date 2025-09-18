@@ -12,14 +12,7 @@ model User {
   email            String           @unique
   password         String
   name             String
-  photo            String?
   designation      String?
-  bio              String?
-  githubLink       String?
-  linkedinLink     String?
-  twitterLink      String?
-  websiteLink      String?
-  resumeLink       String?
   education        String?
   otp              String?
   university       String?
@@ -30,14 +23,21 @@ model User {
   phone            String?
   experience       String?
   changePasswordAt DateTime?
-  projects         Project[]
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-  Skill            Skill[]
-  WorkExperience   WorkExperience[]
-  Testimonial      Testimonial[]
+  bio              String?
+  githubLink       String?
+  linkedinLink     String?
+  photo            String?
+  resumeLink       String?
+  twitterLink      String?
+  websiteLink      String?
   CodingProfile    CodingProfile[]
   LearningGoal     LearningGoal[]
+  projects         Project[]
+  Skill            Skill[]
+  Testimonial      Testimonial[]
+  WorkExperience   WorkExperience[]
 }
 
 model Project {
@@ -61,32 +61,31 @@ model Project {
 model Skill {
   id          Int      @id @default(autoincrement())
   userId      Int
-  category    String // Frontend, Backend, DevOps
-  name        String // Skill name (e.g., React, Node.js, Docker)
-  proficiency Int // Proficiency percentage (0-100)
+  category    String
+  name        String
+  proficiency Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
 
-  @@index([category, name]) // Optional: For faster queries
+  @@index([category, name])
 }
 
 model WorkExperience {
-  id     Int @id @default(autoincrement())
-  userId Int
-
-  role             String // Job title (e.g., Senior Full Stack Developer, Full Stack Developer)
-  company          String // Company name (e.g., TechSolutions Inc., StartupXYZ)
-  startDate        DateTime // Start date of the job
-  endDate          DateTime? // End date (nullable for current role)
-  isCurrent        Boolean   @default(false) // Indicates if the role is current
-  responsibilities String // Description of responsibilities
-  achievements     String[] // Array of key achievements
+  id               Int       @id @default(autoincrement())
+  userId           Int
+  role             String
+  company          String
+  startDate        DateTime
+  endDate          DateTime?
+  isCurrent        Boolean   @default(false)
+  responsibilities String
+  achievements     String[]
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   user             User      @relation(fields: [userId], references: [id])
 
-  @@index([role, company]) // Optional: For faster queries
+  @@index([role, company])
 }
 
 model Testimonial {
@@ -102,32 +101,30 @@ model Testimonial {
 }
 
 model CodingProfile {
-  id     Int @id @default(autoincrement())
-  userId Int
-
-  platform   String // e.g., LeetCode, HackerRank
-  username   String // e.g., @mohebullamiazii
-  profileUrl String? // Optional URL (e.g., https://leetcode.com/mohebullamiazii)
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  platform   String
+  username   String
+  profileUrl String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   user       User     @relation(fields: [userId], references: [id])
 
-  @@index([platform, username]) // Optional: For faster queries
+  @@index([platform, username])
 }
 
 model LearningGoal {
-  id     Int @id @default(autoincrement())
-  userId Int
-
-  category    category // Current Learning or Future Goals
-  title       String // e.g., What are you currently learning?
-  description String? // Optional description
-  tags        String[] // Array of tags (e.g., Data Structures, Machine Learning)
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  category    category
+  title       String
+  description String?
+  tags        String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
 
-  @@index([category, title]) // Optional: For faster queries
+  @@index([category, title])
 }
 
 enum category {
