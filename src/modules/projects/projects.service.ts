@@ -90,7 +90,7 @@ export class ProjectService {
     page: number,
     limit: number,
     search?: string,
-    isFeatured?: boolean,
+    isFeatured?: any,
     order: 'asc' | 'desc' = 'desc',
   ) {
     const where: any = {};
@@ -104,9 +104,10 @@ export class ProjectService {
       ];
     }
 
+
     // featured filter
-    if (typeof isFeatured === 'boolean') {
-      where.isFeatured = isFeatured;
+    if (isFeatured) {
+      where.isFeatured = isFeatured == 'true' ? true : false;
     }
 
     const [items, total] = await this.prisma.$transaction([

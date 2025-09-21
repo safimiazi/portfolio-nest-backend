@@ -73,7 +73,7 @@ async findAllForShowcase(
     Number(page),
     Number(limit),
     search,
-    featured === 'true', // convert query string to boolean
+    featured, // convert query string to boolean
     order,
   );
   return successResponse(data, 'Projects fetched successfully');

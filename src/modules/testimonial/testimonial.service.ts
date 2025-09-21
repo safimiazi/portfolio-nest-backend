@@ -64,34 +64,34 @@ export class TestimonialService {
     return testimonial;
   }
 
-async update(
-  id: number,
-  userId: number,
-  data: any,
-  file?: Express.Multer.File,
-) {
-  const testimonial = await this.prisma.testimonial.findUnique({ where: { id } });
-  if (!testimonial) throw new NotFoundException('Testimonial not found');
-  if (testimonial.userId !== userId)
-    throw new ForbiddenException('You are not allowed to update this testimonial');
+  async update(
+    id: number,
+    userId: number,
+    data: any,
+    file?: Express.Multer.File,
+  ) {
+    const testimonial = await this.prisma.testimonial.findUnique({ where: { id } });
+    if (!testimonial) throw new NotFoundException('Testimonial not found');
+    if (testimonial.userId !== userId)
+      throw new ForbiddenException('You are not allowed to update this testimonial');
 
-  let avatarUrl = testimonial.avatar;
+    let avatarUrl = testimonial.avatar;
 
-  // ✅ If a new avatar file is uploaded, upload to Cloudinary
-  if (file) {
-    avatarUrl = await this.uploadAvatar(file);
+    // ✅ If a new avatar file is uploaded, upload to Cloudinary
+    if (file) {
+      avatarUrl = await this.uploadAvatar(file);
+    }
+
+    return this.prisma.testimonial.update({
+      where: { id },
+      data: {
+        name: data.name ?? testimonial.name,
+        position: data.position ?? testimonial.position,
+        content: data.content ?? testimonial.content,
+        avatar: avatarUrl,
+      },
+    });
   }
-
-  return this.prisma.testimonial.update({
-    where: { id },
-    data: {
-      name: data.name ?? testimonial.name,
-      position: data.position ?? testimonial.position,
-      content: data.content ?? testimonial.content,
-      avatar: avatarUrl,
-    },
-  });
-}
 
 
   async remove(id: number, userId: number) {
