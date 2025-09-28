@@ -20,6 +20,7 @@ model User {
   universityEnd    String?
   gpa              String?
   location         String?
+  projectCompleted String?
   phone            String?
   experience       String?
   changePasswordAt DateTime?
