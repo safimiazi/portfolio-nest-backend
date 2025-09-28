@@ -88,6 +88,11 @@ async findAllForShowcase(
     const data = await this.projectService.findOne(id);
     return successResponse(data, 'Project fetched successfully');
   }
+  @Get('project/:id')
+  async findOneForShowcase(@Param('id', ParseIntPipe) id: number) {
+    const data = await this.projectService.findOne(id);
+    return successResponse(data, 'Project fetched successfully');
+  }
 
   // ✅ Update project (only owner can update)
   @UseGuards(JwtAuthGuard) // ✅ All routes are protected
